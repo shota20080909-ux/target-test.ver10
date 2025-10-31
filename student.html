@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>生徒用 単語テスト（単元選択）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>生徒用 単語テスト</h1>
+
+    <div id="selectUnit">
+      <h2>単元を選択してください</h2>
+      <select id="unitSelect"></select>
+      <button id="startBtn">開始</button>
+    </div>
+
+    <div id="quiz" style="display:none;">
+      <p id="question"></p>
+      <input type="text" id="answer" placeholder="英語で入力">
+      <div class="button-area">
+        <button id="submitBtn">答える</button>
+        <button id="nextBtn" style="display:none;">次へ</button>
+        <button id="endBtn">終了</button>
+      </div>
+      <p id="result"></p>
+    </div>
+
+    <div id="score" style="display:none;"></div>
+  </div>
+
+  <script>
+    const selectUnitDiv = document.getElementById('selectUnit');
+    const unitSelect = document.getElementById('unitSelect');
+    const startBtn = document.getElementById('startBtn');
+    const quizDiv = document.getElementById('quiz');
+    const questionEl = document.getElementById('question');
+    const answerEl = document.getElementById('answer');
+    const resultEl = document.getElementById('result');
+    const scoreEl = document.getElementById('score');
+    const submitBtn = document.getElementById('submitBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const endBtn = document.getElementById('endBtn');
+
+    let allUnits = JSON.parse(localStorage.getItem('units')) || {};
+    let words = [];
+    let current = 0;
+    let score = 0;
+    let wrongWords = [];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function loadUnits() {
+      unitSelect.innerHTML = '';
+      Object.keys(allUnits).forEach(unit => {
+        const option = document.createElement('option');
+        option.value = unit;
+        option.textContent = unit;
+        unitSelect.appendChild(option);
+      });
+    }
+
+    function showQuestion() {
+      if (current < words.length) {
+        questionEl.textContent = `Q${current + 1}. 「${words[current].jp}」を英語で？`;
+        answerEl.value = '';
+        resultEl.textContent = '';
+        submitBtn.style.display = 'inline-block';
+        nextBtn.style.display = 'none';
+        answerEl.focus();
+      } else if (wrongWords.length > 0) {
+        words = wrongWords;
+        wrongWords = [];
+        current = 0;
+        alert('間違えた問題をもう一度やり直します！');
+        showQuestion();
+      } else {
+        finishTest();
+      }
+    }
+
+    function checkAnswer() {
+      const userAns = answerEl.value.trim().toLowerCase();
+      const correct = words[current].en.toLowerCase();
+
+      if (userAns === correct) {
+        resultEl.textContent = '✅ 正解！';
+        score++;
+      } else {
+        resultEl.textContent = `❌ 不正解。正解は「${words[current].en}」`;
+        wrongWords.push(words[current]);
+      }
+
+      submitBtn.style.display = 'none';
+      nextBtn.style.display = 'inline-block';
+    }
+
+    function finishTest() {
+      quizDiv.style.display = 'none';
+      scoreEl.style.display = 'block';
+      scoreEl.textContent = `スコア: ${score} / ${JSON.parse(localStorage.getItem('units'))[unitSelect.value].length}`;
+    }
+
+    startBtn.addEventListener('click', () => {
+      const selectedUnit = unitSelect.value;
+      if (!selectedUnit) {
+        alert('単元を選択してください。');
+        return;
+      }
+
+      words = shuffle([...allUnits[selectedUnit]]);
+      current = 0;
+      score = 0;
+      wrongWords = [];
+
+      selectUnitDiv.style.display = 'none';
+      quizDiv.style.display = 'block';
+      showQuestion();
+    });
+
+    submitBtn.addEventListener('click', checkAnswer);
+    nextBtn.addEventListener('click', () => {
+      current++;
+      showQuestion();
+    });
+    endBtn.addEventListener('click', finishTest);
+
+    answerEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        if (submitBtn.style.display !== 'none') checkAnswer();
+        else nextBtn.click();
+      }
+    });
+
+    loadUnits();
+  </script>
+</body>
+</html>

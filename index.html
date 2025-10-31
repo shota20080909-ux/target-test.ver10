@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>教師用 単語テスト登録（単元別）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>教師用 単語テスト登録（単元別）</h1>
+
+    <label for="unitName">単元名：</label>
+    <input type="text" id="unitName" placeholder="例：Lesson1, UnitA など">
+
+    <textarea id="wordInput" placeholder="日本語:英語 の形式で入力（1行1問）"></textarea>
+    <button id="saveWords">単元に保存</button>
+
+    <h2>登録済み単元一覧</h2>
+    <ul id="unitList"></ul>
+
+    <a href="student.html" class="student-link">👉 生徒用ページはこちら</a>
+  </div>
+
+  <script>
+    const unitNameInput = document.getElementById('unitName');
+    const wordInput = document.getElementById('wordInput');
+    const saveBtn = document.getElementById('saveWords');
+    const unitList = document.getElementById('unitList');
+
+    function loadUnits() {
+      const allUnits = JSON.parse(localStorage.getItem('units')) || {};
+      unitList.innerHTML = '';
+
+      Object.keys(allUnits).forEach(unit => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${unit}</strong>（${allUnits[unit].length}問）`;
+        unitList.appendChild(li);
+      });
+    }
+
+    saveBtn.addEventListener('click', () => {
+      const unit = unitNameInput.value.trim();
+      if (!unit) {
+        alert('単元名を入力してください。');
+        return;
+      }
+
+      const lines = wordInput.value.trim().split('\n');
+      const words = lines.map(line => {
+        const [jp, en] = line.split(':').map(s => s.trim());
+        return { jp, en };
+      }).filter(w => w.jp && w.en);
+
+      if (words.length === 0) {
+        alert('単語を1つ以上入力してください。');
+        return;
+      }
+
+      const allUnits = JSON.parse(localStorage.getItem('units')) || {};
+      allUnits[unit] = words;
+      localStorage.setItem('units', JSON.stringify(allUnits));
+
+      alert(`単元「${unit}」を保存しました！`);
+      unitNameInput.value = '';
+      wordInput.value = '';
+      loadUnits();
+    });
+
+    loadUnits();
+  </script>
+</body>
+</html>

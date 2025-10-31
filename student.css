@@ -1,0 +1,78 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f8fafc;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+  text-align: center;
+  color: #2c3e50;
+}
+
+textarea, input[type="text"], select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #3498db;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.button-area {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.student-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+  color: #3498db;
+  text-decoration: none;
+}
+
+.student-link:hover {
+  text-decoration: underline;
+}
+
+#result {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+#score {
+  text-align: center;
+  font-size: 22px;
+  color: #27ae60;
+  margin-top: 20px;
+}
